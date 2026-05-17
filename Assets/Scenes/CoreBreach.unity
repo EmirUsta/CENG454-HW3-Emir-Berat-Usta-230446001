@@ -616,8 +616,8 @@ MonoBehaviour:
   - {fileID: 1559513588}
   - {fileID: 1845589005}
   - {fileID: 1799867833}
-  totalWaves: 5
-  timeBetweenWaves: 8
+  totalWaves: 8
+  timeBetweenWaves: 15
   timeBetweenSpawns: 0.8
 --- !u!4 &1434159111
 Transform:
