@@ -16,6 +16,7 @@ public class ShieldDecorator : ICoreDefense
 
         float absorbed = UnityEngine.Mathf.Min(_shieldHealth, incomingDamage);
         _shieldHealth -= absorbed;
+        EventBus.CoreShieldChanged(_shieldHealth);
         float remaining = incomingDamage - absorbed;
         return _inner.ApplyDefense(remaining);
     }
