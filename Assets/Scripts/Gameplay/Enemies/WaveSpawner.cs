@@ -61,7 +61,7 @@ public class WaveSpawner : MonoBehaviour
         Transform point = spawnPoints[Random.Range(0, spawnPoints.Length)];
         Enemy e = _scoutPool.Get();
         e.transform.position = point.position;
-        e.Setup(new DirectChargeStrategy(), coreTransform, 20f, 3f, () => _scoutPool.Return(e));
+        e.Setup(new ZigzagStrategy(), coreTransform, 20f, 2f, () => _scoutPool.Return(e));
     }
 
     private void SpawnBrute()
@@ -69,6 +69,6 @@ public class WaveSpawner : MonoBehaviour
         Transform point = spawnPoints[Random.Range(0, spawnPoints.Length)];
         Enemy e = _brutePool.Get();
         e.transform.position = point.position;
-        e.Setup(new ZigzagStrategy(), coreTransform, 60f, 1.5f, () => _brutePool.Return(e));
+        e.Setup(new DirectChargeStrategy(), coreTransform, 60f, 1.5f, () => _brutePool.Return(e));
     }
 }
