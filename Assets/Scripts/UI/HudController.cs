@@ -4,6 +4,7 @@ using TMPro;
 public class HudController : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI coreHealthText;
+    [SerializeField] private TextMeshProUGUI shieldText;
     [SerializeField] private TextMeshProUGUI waveText;
     [SerializeField] private TextMeshProUGUI resultText;
 
@@ -12,6 +13,7 @@ public class HudController : MonoBehaviour
     void OnEnable()
     {
         EventBus.OnCoreDamaged += UpdateHealth;
+        EventBus.OnCoreShieldChanged += UpdateShield;
         EventBus.OnEnemyDied += OnEnemyDied;
         EventBus.OnWaveCleared += OnWaveCleared;
         EventBus.OnGameStateChanged += OnGameStateChanged;
@@ -20,6 +22,7 @@ public class HudController : MonoBehaviour
     void OnDisable()
     {
         EventBus.OnCoreDamaged -= UpdateHealth;
+        EventBus.OnCoreShieldChanged -= UpdateShield;
         EventBus.OnEnemyDied -= OnEnemyDied;
         EventBus.OnWaveCleared -= OnWaveCleared;
         EventBus.OnGameStateChanged -= OnGameStateChanged;
@@ -35,6 +38,12 @@ public class HudController : MonoBehaviour
     {
         if (coreHealthText != null)
             coreHealthText.text = $"Core: {current:F0} / {max:F0}";
+    }
+
+    private void UpdateShield(float shield)
+    {
+        if (shieldText != null)
+            shieldText.text = $"Shield: {shield:F0}";
     }
 
     private void OnEnemyDied(Vector3 position)
