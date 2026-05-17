@@ -4,11 +4,9 @@ using UnityEngine;
 public class Enemy : MonoBehaviour, IDamageable, IPoolable
 {
     [SerializeField] private float attackDamage = 5f;
-    [SerializeField] private float attackRate = 1f;
 
     private float _currentHealth;
     private float _moveSpeed;
-    private float _attackCooldown;
     private bool _stopped;
     private IMovementStrategy _movementStrategy;
     private Transform _coreTransform;
@@ -39,17 +37,16 @@ public class Enemy : MonoBehaviour, IDamageable, IPoolable
     void Update()
     {
         if (!IsAlive || _stopped) return;
-        if (_attackCooldown > 0f) _attackCooldown -= Time.deltaTime;
         _movementStrategy?.Move(transform, _coreTransform, _moveSpeed);
     }
 
-    void OnTriggerStay2D(Collider2D other)
+    void OnTriggerEnter2D(Collider2D other)
     {
-        if (!IsAlive || _stopped || _attackCooldown > 0f) return;
+        if (!IsAlive) return;
         if (other.CompareTag("Core") && other.TryGetComponent<IDamageable>(out var target))
         {
             target.TakeDamage(attackDamage);
-            _attackCooldown = attackRate;
+            _returnToPool?.Invoke();
         }
     }
 
@@ -70,7 +67,6 @@ public class Enemy : MonoBehaviour, IDamageable, IPoolable
 
     public void OnSpawned()
     {
-        _attackCooldown = 0f;
         _stopped = false;
     }
 
