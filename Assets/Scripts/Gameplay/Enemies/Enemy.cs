@@ -31,6 +31,11 @@ public class Enemy : MonoBehaviour, IDamageable, IPoolable
         EventBus.OnCoreDestroyed += StopMoving;
     }
 
+    void OnDisable()
+    {
+        EventBus.OnCoreDestroyed -= StopMoving;
+    }
+
     void Update()
     {
         if (!IsAlive || _stopped) return;
