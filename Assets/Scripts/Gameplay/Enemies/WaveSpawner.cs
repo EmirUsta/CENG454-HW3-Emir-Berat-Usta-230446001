@@ -14,6 +14,7 @@ public class WaveSpawner : MonoBehaviour
     private ObjectPool<Enemy> _scoutPool;
     private ObjectPool<Enemy> _brutePool;
     private int _currentWave;
+    private bool _gameOver;
 
     void Awake()
     {
@@ -22,21 +23,42 @@ public class WaveSpawner : MonoBehaviour
         _brutePool = new ObjectPool<Enemy>(brutePrefab, poolParent, 3);
     }
 
+    void OnEnable()
+    {
+        EventBus.OnGameStateChanged += OnGameStateChanged;
+    }
+
+    void OnDisable()
+    {
+        EventBus.OnGameStateChanged -= OnGameStateChanged;
+    }
+
     public void StartWaves()
     {
         StartCoroutine(WaveRoutine());
     }
 
+    private void OnGameStateChanged(GameState state)
+    {
+        if (state == GameState.Win || state == GameState.Lose)
+        {
+            _gameOver = true;
+            StopAllCoroutines();
+        }
+    }
+
     private IEnumerator WaveRoutine()
     {
-        while (_currentWave < totalWaves)
+        while (_currentWave < totalWaves && !_gameOver)
         {
+            EventBus.WaveStarted(_currentWave + 1, totalWaves);
             yield return StartCoroutine(SpawnWave(_currentWave));
             _currentWave++;
             if (_currentWave < totalWaves)
                 yield return new WaitForSeconds(timeBetweenWaves);
         }
-        EventBus.WaveCleared(_currentWave);
+        if (!_gameOver)
+            EventBus.WaveCleared(_currentWave);
     }
 
     private IEnumerator SpawnWave(int waveIndex)
@@ -44,12 +66,12 @@ public class WaveSpawner : MonoBehaviour
         int scoutCount = 3 + waveIndex;
         int bruteCount = waveIndex / 2;
 
-        for (int i = 0; i < scoutCount; i++)
+        for (int i = 0; i < scoutCount && !_gameOver; i++)
         {
             SpawnScout();
             yield return new WaitForSeconds(timeBetweenSpawns);
         }
-        for (int i = 0; i < bruteCount; i++)
+        for (int i = 0; i < bruteCount && !_gameOver; i++)
         {
             SpawnBrute();
             yield return new WaitForSeconds(timeBetweenSpawns);
