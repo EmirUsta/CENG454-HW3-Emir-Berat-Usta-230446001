@@ -9,12 +9,15 @@ public class HudController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI resultText;
 
     private int _kills;
+    private int _wave;
+    private int _totalWaves;
 
     void OnEnable()
     {
         EventBus.OnCoreDamaged += UpdateHealth;
         EventBus.OnCoreShieldChanged += UpdateShield;
         EventBus.OnEnemyDied += OnEnemyDied;
+        EventBus.OnWaveStarted += OnWaveStarted;
         EventBus.OnWaveCleared += OnWaveCleared;
         EventBus.OnGameStateChanged += OnGameStateChanged;
     }
@@ -24,6 +27,7 @@ public class HudController : MonoBehaviour
         EventBus.OnCoreDamaged -= UpdateHealth;
         EventBus.OnCoreShieldChanged -= UpdateShield;
         EventBus.OnEnemyDied -= OnEnemyDied;
+        EventBus.OnWaveStarted -= OnWaveStarted;
         EventBus.OnWaveCleared -= OnWaveCleared;
         EventBus.OnGameStateChanged -= OnGameStateChanged;
     }
@@ -49,12 +53,25 @@ public class HudController : MonoBehaviour
     private void OnEnemyDied(Vector3 position)
     {
         _kills++;
-        if (waveText != null) waveText.text = $"Kills: {_kills}";
+        RefreshStatus();
+    }
+
+    private void OnWaveStarted(int current, int total)
+    {
+        _wave = current;
+        _totalWaves = total;
+        RefreshStatus();
     }
 
     private void OnWaveCleared(int wave)
     {
         if (waveText != null) waveText.text = $"All {wave} waves cleared";
+    }
+
+    private void RefreshStatus()
+    {
+        if (waveText != null)
+            waveText.text = $"Wave {_wave} / {_totalWaves}   Kills: {_kills}";
     }
 
     private void OnGameStateChanged(GameState state)
