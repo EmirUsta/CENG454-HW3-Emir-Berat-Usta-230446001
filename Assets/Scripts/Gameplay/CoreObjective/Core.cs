@@ -25,6 +25,12 @@ public class Core : MonoBehaviour, IDamageable
             regenPerSecond, Heal);
     }
 
+    void Start()
+    {
+        EventBus.CoreDamaged(_currentHealth, maxHealth);
+        EventBus.CoreShieldChanged(shieldCapacity);
+    }
+
     void Update()
     {
         if (!IsAlive) return;
